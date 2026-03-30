@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HostelVoice</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#faf9f6;--sur:#fff;--bor:#e8e5de;--borh:#d4cfc6;--txt:#1a1916;--mut:#6b6860;--hin:#a8a59e;--or:#D85A30;--orb:#FAECE7;--ord:#4A1B0C;--r:10px;--rs:6px;--f:'DM Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--f);background:var(--bg);color:var(--txt);min-height:100vh;line-height:1.6;}
+.app{max-width:640px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+.header{text-align:center;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--bor);}
+.logo{font-size:24px;font-weight:600;letter-spacing:-0.5px;}
+.logo span{color:var(--or);}
+.tagline{font-size:14px;color:var(--mut);margin-top:4px;}
+.card{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:1.25rem 1.5rem;margin-bottom:1rem;}
+.field{margin-bottom:1.25rem;}.field:last-child{margin-bottom:0;}
+label{display:block;font-size:13px;font-weight:500;color:var(--mut);margin-bottom:8px;}
+textarea,input[type=text]{width:100%;padding:9px 12px;border:1px solid var(--bor);border-radius:var(--rs);font-size:14px;background:var(--sur);color:var(--txt);font-family:var(--f);outline:none;transition:border .15s;}
+textarea:focus,input[type=text]:focus{border-color:var(--or);}
+textarea{resize:vertical;min-height:85px;line-height:1.6;}
+.og{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.og3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.opt{padding:9px 12px;border:1px solid var(--bor);border-radius:var(--rs);background:var(--sur);color:var(--mut);font-size:13px;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--f);line-height:1.4;}
+.opt:hover{border-color:var(--or);color:var(--txt);}
+.opt.on{border-color:var(--or);background:var(--orb);color:var(--ord);font-weight:500;}
+.btn{width:100%;padding:11px;border:none;border-radius:var(--rs);background:var(--or);color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:background .15s;font-family:var(--f);}
+.btn:hover{background:#993C1D;}
+.loading{text-align:center;padding:3rem 1rem;}
+.spin{width:26px;height:26px;border:2px solid var(--bor);border-top-color:var(--or);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading p{font-size:14px;color:var(--mut);}
+.result-card{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:1.5rem;margin-bottom:1rem;}
+.rlabel{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--hin);margin-bottom:14px;}
+.ctext{font-size:14px;color:var(--txt);line-height:1.9;white-space:pre-wrap;}
+.arow{display:flex;gap:8px;margin-top:1.25rem;}
+.cbtn{flex:1;padding:9px;border:1px solid var(--bor);border-radius:var(--rs);background:transparent;color:var(--mut);font-size:13px;cursor:pointer;font-family:var(--f);transition:all .15s;}
+.cbtn:hover{border-color:var(--or);color:var(--or);}
+.rbtn{padding:9px 16px;border:1px solid var(--bor);border-radius:var(--rs);background:transparent;color:var(--mut);font-size:13px;cursor:pointer;font-family:var(--f);}
+.err{font-size:13px;color:#a32d2d;margin-bottom:10px;display:none;}
+.hidden{display:none!important;}
+.note{font-size:12px;color:var(--hin);text-align:center;margin-top:.75rem;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo">Hostel<span>Voice</span></div>
+    <div class="tagline">Describe your problem. Get a professional complaint letter instantly.</div>
+  </div>
+
+  <div id="fv">
+    <div class="card">
+      <div class="field">
+        <label>What's the issue?</label>
+        <textarea id="issue" placeholder="e.g. The hot water hasn't worked in our wing for 3 weeks. I've told the warden twice but nothing has happened..."></textarea>
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <div class="og">
+          <button class="opt" onclick="pick(this,'cat','water')" data-g="cat">Water / Plumbing</button>
+          <button class="opt" onclick="pick(this,'cat','food')" data-g="cat">Food / Mess</button>
+          <button class="opt" onclick="pick(this,'cat','wifi')" data-g="cat">WiFi / Electricity</button>
+          <button class="opt" onclick="pick(this,'cat','safety')" data-g="cat">Safety / Security</button>
+          <button class="opt" onclick="pick(this,'cat','hygiene')" data-g="cat">Hygiene / Cleanliness</button>
+          <button class="opt" onclick="pick(this,'cat','other')" data-g="cat">Other</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>How long has this been going on?</label>
+        <div class="og">
+          <button class="opt" onclick="pick(this,'dur','today')" data-g="dur">Just today</button>
+          <button class="opt" onclick="pick(this,'dur','week')" data-g="dur">About a week</button>
+          <button class="opt" onclick="pick(this,'dur','weeks')" data-g="dur">2–3 weeks</button>
+          <button class="opt" onclick="pick(this,'dur','month')" data-g="dur">Over a month</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Tone</label>
+        <div class="og3">
+          <button class="opt" onclick="pick(this,'tone','polite')" data-g="tone">Polite 🙏</button>
+          <button class="opt" onclick="pick(this,'tone','firm')" data-g="tone">Firm 📋</button>
+          <button class="opt" onclick="pick(this,'tone','urgent')" data-g="tone">Urgent 🚨</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Your name (optional)</label>
+        <input type="text" id="uname" placeholder="e.g. Hrishika Sharma, Room 204"/>
+      </div>
+    </div>
+    <div class="err" id="err"></div>
+    <button class="btn" onclick="gen()">Draft my complaint →</button>
+  </div>
+
+  <div id="lv" class="hidden">
+    <div class="loading"><div class="spin"></div><p>Writing your complaint letter...</p></div>
+  </div>
+
+  <div id="rv" class="hidden">
+    <div class="result-card">
+      <div class="rlabel">Your complaint letter</div>
+      <div class="ctext" id="cout"></div>
+      <div class="arow">
+        <button class="cbtn" onclick="copy()">Copy to clipboard</button>
+        <button class="rbtn" onclick="reset()">← New complaint</button>
+      </div>
+    </div>
+    <div class="note">Review before sending — add specific dates and room numbers for best results.</div>
+  </div>
+</div>
+
+<script>
+const S={cat:null,dur:null,tone:null};
+const K=atob('c2stYW50LWFwaTAzLXlMXzE5YXhOajRhakhzX1gwQ3RRMXlQOXRsMm9rM3ZtYXQyOE1iVmg1WDlQdTlUYWRlNlVQejZ5OXNHWUsteVVoZ1RZblRHNjBiYW1kc0ZwT2haSTJnLXNZLTNTd0FB');
+const EP='https://api.anthropic.com/v1/messages';
+const H={'Content-Type':'application/json','x-api-key':K,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
+
+function pick(el,k,v){
+  document.querySelectorAll('[data-g="'+k+'"]').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');S[k]=v;
+}
+
+async function gen(){
+  const issue=document.getElementById('issue').value.trim();
+  const err=document.getElementById('err');
+  if(!issue){err.textContent='Please describe your issue.';err.style.display='block';return;}
+  if(!S.cat||!S.dur||!S.tone){err.textContent='Please select category, duration, and tone.';err.style.display='block';return;}
+  err.style.display='none';
+  const name=document.getElementById('uname').value.trim()||'[Your Name, Room Number]';
+  const dl={today:'since today',week:'for about a week',weeks:'for 2-3 weeks',month:'for over a month'}[S.dur];
+  const tl={polite:'respectful and polite',firm:'firm and professional',urgent:'urgent and assertive'}[S.tone];
+  const cl={water:'water and plumbing',food:'food and mess',wifi:'wifi and electricity',safety:'safety and security',hygiene:'hygiene and cleanliness',other:'general hostel'}[S.cat];
+  document.getElementById('fv').classList.add('hidden');
+  document.getElementById('lv').classList.remove('hidden');
+  const prompt='Write a formal complaint letter from an Indian college hostel student to the Chief Warden.\n\nIssue: '+issue+'\nCategory: '+cl+'\nDuration: '+dl+'\nTone: '+tl+'\nStudent: '+name+'\n\nFormat: formal letter with greeting, clear problem description, duration, any prior reporting attempts, requested action with timeline, and formal closing. Under 200 words. Sound like a real student, not a lawyer.';
+  try{
+    const r=await fetch(EP,{method:'POST',headers:H,body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    if(d.error)throw new Error(d.error.message);
+    const txt=d.content.find(b=>b.type==='text')?.text||'';
+    document.getElementById('lv').classList.add('hidden');
+    document.getElementById('rv').classList.remove('hidden');
+    document.getElementById('cout').textContent=txt;
+  }catch(e){
+    document.getElementById('lv').classList.add('hidden');
+    document.getElementById('fv').classList.remove('hidden');
+    err.textContent='Error: '+(e.message||'Something went wrong.');
+    err.style.display='block';
+  }
+}
+
+function copy(){
+  navigator.clipboard.writeText(document.getElementById('cout').textContent).then(()=>{
+    const b=document.querySelector('.cbtn');b.textContent='Copied!';
+    setTimeout(()=>b.textContent='Copy to clipboard',2000);
+  });
+}
+
+function reset(){
+  document.getElementById('rv').classList.add('hidden');
+  document.getElementById('fv').classList.remove('hidden');
+  document.getElementById('issue').value='';
+  document.getElementById('uname').value='';
+  Object.keys(S).forEach(k=>S[k]=null);
+  document.querySelectorAll('[data-g]').forEach(b=>b.classList.remove('on'));
+}
+</script>
+</body>
+</html>
